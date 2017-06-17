@@ -31,16 +31,16 @@ void setup() {
     // Setup motors
     // Loop to setup the pinModes
     for(int i = 0; i < 3; i++)
-    {        
+    {
         pinMode(motor_left[i], OUTPUT); // Initialize the pins as output for the left motor
         pinMode(motor_right[i], OUTPUT); // Initialize the pins as output for the right motor
     }
     // position servo to center
-    servoAngle(SERVOCENTER);
+    servo.write(SERVOCENTER);
 }
 
 // --------------------------------------------------------------------------- Loop Module
-void loop() { 
+void loop() {
     float forwardDistance = ping();
     drive_forward();
     if (forwardDistance > Thresholddistance)
@@ -50,17 +50,17 @@ void loop() {
     else
     {
         brake();
-        servoAngle(SERVOLEFT);         // check for obstacles to the left
-        float leftDistance=ping(); 
-        servoAngle(SERVORIGHT);      // check for obstacles to the right
+        servo.write(SERVOLEFT);         // check for obstacles to the left
+        float leftDistance=ping();
+        servo.write(SERVORIGHT);      // check for obstacles to the right
         float rightDistance=ping();  // find the distance to the right
-        servoAngle(SERVOCENTER); 
+        servo.write(SERVOCENTER);
         if (leftDistance > rightDistance && leftDistance > Thresholddistance){
             turn_left();
         }
         else if(rightDistance > leftDistance && rightDistance > Thresholddistance){
             turn_right();
-        } 
+        }
         else {
             turn_around();
         }
@@ -82,9 +82,9 @@ void motor_stop(){
 // Following Module is for the Robot to slow down
 void brake()
 {
-    digitalWrite(motor_left[0], HIGH);   
-    digitalWrite(motor_left[1], LOW); 
-    digitalWrite(motor_left[2], LOW); 
+    digitalWrite(motor_left[0], HIGH);
+    digitalWrite(motor_left[1], LOW);
+    digitalWrite(motor_left[2], LOW);
     digitalWrite(motor_right[0], HIGH);
     digitalWrite(motor_right[1], LOW);
     digitalWrite(motor_right[2], LOW);
@@ -93,29 +93,29 @@ void brake()
 // Following Module is for the Robot to go forward
 void drive_forward()
 {
-    digitalWrite(motor_left[0], HIGH);   
+    digitalWrite(motor_left[0], HIGH);
     digitalWrite(motor_left[1], HIGH);
-    digitalWrite(motor_left[2], LOW); 
-    digitalWrite(motor_right[0], HIGH); 
+    digitalWrite(motor_left[2], LOW);
+    digitalWrite(motor_right[0], HIGH);
     digitalWrite(motor_right[1], LOW);
-    digitalWrite(motor_right[2], HIGH); 
+    digitalWrite(motor_right[2], HIGH);
 }
 // Following Module is for the Robot to go backwards
 void drive_backward()
 {
-    digitalWrite(motor_left[0], HIGH); 
+    digitalWrite(motor_left[0], HIGH);
     digitalWrite(motor_left[1], LOW);
-    digitalWrite(motor_left[2], HIGH); 
-    digitalWrite(motor_right[0], HIGH); 
-    digitalWrite(motor_right[1], HIGH); 
+    digitalWrite(motor_left[2], HIGH);
+    digitalWrite(motor_right[0], HIGH);
+    digitalWrite(motor_right[1], HIGH);
     digitalWrite(motor_right[2], LOW);
 }
 // Following Module is for the Robot to turn left
 void turn_left()
 {
-    digitalWrite(motor_left[0], HIGH); 
-    digitalWrite(motor_left[1], HIGH); 
-    digitalWrite(motor_left[2], LOW); 
+    digitalWrite(motor_left[0], HIGH);
+    digitalWrite(motor_left[1], HIGH);
+    digitalWrite(motor_left[2], LOW);
     digitalWrite(motor_right[0], HIGH);
     digitalWrite(motor_right[1], HIGH);
     digitalWrite(motor_right[2], LOW);
@@ -124,8 +124,8 @@ void turn_left()
 // Following Module is for the Robot to turn right
 void turn_right()
 {
-    digitalWrite(motor_left[0], HIGH); 
-    digitalWrite(motor_left[1], LOW); 
+    digitalWrite(motor_left[0], HIGH);
+    digitalWrite(motor_left[1], LOW);
     digitalWrite(motor_left[2], HIGH);
     digitalWrite(motor_right[0], HIGH);
     digitalWrite(motor_right[1], LOW);
@@ -135,8 +135,8 @@ void turn_right()
 // Following Module is to make a uturn if there are obstacles to the right, to the left and in front
 void turn_around()
 {
-    digitalWrite(motor_left[0], HIGH); 
-    digitalWrite(motor_left[1], LOW); 
+    digitalWrite(motor_left[0], HIGH);
+    digitalWrite(motor_left[1], LOW);
     digitalWrite(motor_left[2], HIGH);
     digitalWrite(motor_right[0], HIGH);
     digitalWrite(motor_right[1], LOW);
@@ -144,40 +144,10 @@ void turn_around()
     delay(600);
 }
 
-// Module for the Servo
-void servoAngle(int angleNew)
-{
-    // change direction when limits are reached
-    if (angleNew > angleCur)
-    {
-        for (int angle = angleCur; angle<angleNew;angle +=1)
-        {
-            myServo.write(angle);
-            delay(20);
-        }
-        angleCur=angleNew;
-    }
-    else if (angleNew < angleCur)
-    {
-        for (int angle = angleCur; angle<angleNew;angle -=1)
-        {
-            myServo.write(angle);
-            delay(20);
-        }
-        angleCur=angleNew;
-    }
-}
-
 // Following Module is to test for ping using ultrasonic range finder
 float ping()
 {
   delay(50);
-  unsigned int uS = sonar.ping();
-  if (uS == 0)
- {
-   return MAXIMUM_DISTANCE;
- }
-  else
-    return (uS /US_ROUNDTRIP_CM);
+  return sonar.ping_cm();
 }
 
